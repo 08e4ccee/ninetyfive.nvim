@@ -56,6 +56,11 @@ function Websocket.send_message(message)
         return false
     end
 
+    if _G.Ninetyfive.state == nil or not _G.Ninetyfive.state.enabled then
+        -- print("send_message called but state disabled")
+        return false
+    end
+
     -- Check if websocket job exists and is valid
     if not (_G.Ninetyfive.websocket_job and _G.Ninetyfive.websocket_job > 0) then
         log.debug("websocket", "Websocket connection not established")
@@ -612,6 +617,10 @@ function Websocket.setup_connection(server_uri, user_id, api_key)
         on_stdout = function(_, data, _)
             if not data then
                 return
+            end
+            if _G.Ninetyfive.state == nil or not _G.Ninetyfive.state.enabled then
+                -- print("stdout recvd but state disabled")
+                return false
             end
 
             for _, line in ipairs(data) do
