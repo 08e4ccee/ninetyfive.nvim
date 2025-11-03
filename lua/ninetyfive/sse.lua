@@ -3,6 +3,7 @@ local suggestion = require("ninetyfive.suggestion")
 local completion = require("ninetyfive.completion")
 local git = require("ninetyfive.git")
 local completion_state = require("ninetyfive.completion_state")
+local ignore_filetypes = require("ninetyfive.ignored")
 
 local Sse = {}
 
@@ -424,8 +425,9 @@ function Sse.setup_autocommands()
         callback = function(args)
             local bufnr = args.buf
             local filetype = vim.bo[bufnr].filetype
-
-            if filetype == "oil" then
+            -- if filetype == "oil" then
+            --     return
+            if vim.tbl_contains(ignore_filetypes, filetype) then
                 return
             end
 
@@ -452,7 +454,7 @@ function Sse.setup_autocommands()
             local bufnr = args.buf
             local filetype = vim.bo[bufnr].filetype
 
-            if filetype == "oil" then
+            if vim.tbl_contains(ignore_filetypes, filetype) then
                 return
             end
 

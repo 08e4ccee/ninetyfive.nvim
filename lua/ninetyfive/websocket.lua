@@ -4,6 +4,7 @@ local git = require("ninetyfive.git")
 local suggestion = require("ninetyfive.suggestion")
 local completion_state = require("ninetyfive.completion_state")
 
+local ignore_filetypes = require("ninetyfive.ignored")
 local Websocket = {}
 
 -- Reconnection settings
@@ -394,7 +395,7 @@ function Websocket.setup_autocommands()
             local filetype = vim.bo[bufnr].filetype
 
             -- We do not want to trigger when people are in the oil.nvim buffer
-            if filetype == "oil" then
+            if vim.tbl_contains(ignore_filetypes, filetype) then
                 return
             end
 
@@ -453,7 +454,7 @@ function Websocket.setup_autocommands()
             local filetype = vim.bo[bufnr].filetype
 
             -- We do not want to trigger when people are in the oil.nvim buffer
-            if filetype == "oil" then
+            if vim.tbl_contains(ignore_filetypes, filetype) then
                 return
             end
 
