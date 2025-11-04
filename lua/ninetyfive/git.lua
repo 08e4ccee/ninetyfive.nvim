@@ -35,11 +35,13 @@ local function uv_run_async(cmd, cwd, callback)
             if proc then
                 proc:close()
             end
-            if code == 0 then
-                callback((table.concat(out):gsub("\n$", "")))
-            else
-                callback(nil)
-            end
+            vim.schedule(function()
+                if code == 0 then
+                    callback((table.concat(out):gsub("\n$", "")))
+                else
+                    callback(nil)
+                end
+            end)
         end
     )
 

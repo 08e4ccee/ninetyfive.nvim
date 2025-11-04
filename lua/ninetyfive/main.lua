@@ -11,11 +11,13 @@ local main = {}
 ---@private
 function main.toggle(scope)
     if state.get_enabled(state) then
+        print("toggle: is enabled, disabling..")
         log.debug(scope, "ninetyfive is now disabled!")
 
         return main.disable(scope)
     end
 
+    print("toggle: is disabled, enabling..")
     log.debug(scope, "ninetyfive is now enabled!")
 
     main.enable(scope)
