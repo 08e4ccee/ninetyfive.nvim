@@ -12,37 +12,37 @@ end
 function GitignoreCache.is_ignored(bufnr, cb)
     local status = vim.b[bufnr].ninetyfive_gitignored
     if status ~= nil then
-        if cb then
-            cb(status)
-        end
+        cb(status)
+        return
     end
 
     local timer = vim.loop.new_timer()
     local elapsed = 0
-    local max_wait = 3000 -- Optional: max wait time in ms
+    local max_wait = 3000
 
+    local done = false
     timer:start(
         0,
-        30,
+        60,
         vim.schedule_wrap(function()
+            if done then
+                return
+            end
             local status2 = vim.b[bufnr].ninetyfive_gitignored
 
             if status2 ~= nil then
+                done = true
+                -- print("RESOLVING FROM STATUS")
                 timer:stop()
                 timer:close()
-                if cb then
-                    cb(status2)
-                end
+                cb(status2)
             elseif elapsed >= max_wait then
-                -- Optional: timeout after max_wait
+                done = true
                 timer:stop()
                 timer:close()
-                if cb then
-                    cb(false) -- or cb(true) for default value
-                end
+                cb(true)
             end
-
-            elapsed = elapsed + 30
+            elapsed = elapsed + 60
         end)
     )
 
