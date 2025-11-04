@@ -1,5 +1,6 @@
 local log = require("ninetyfive.util.log")
 local state = require("ninetyfive.state")
+local Websocket = require("ninetyfive.websocket")
 
 -- internal methods
 local main = {}
@@ -52,6 +53,7 @@ function main.disable(scope)
 
     -- saves the state globally to `_G.Ninetyfive.state`
     state.save(state)
+    Websocket.shutdown()
 end
 
 return main

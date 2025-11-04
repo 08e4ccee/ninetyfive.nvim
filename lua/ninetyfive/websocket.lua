@@ -620,7 +620,7 @@ function Websocket.setup_connection(server_uri, user_id, api_key)
             end
             if _G.Ninetyfive.state == nil or not _G.Ninetyfive.state.enabled then
                 -- print("stdout recvd but state disabled")
-                return false
+                return
             end
 
             for _, line in ipairs(data) do
