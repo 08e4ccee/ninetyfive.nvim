@@ -4,6 +4,11 @@ local log = require("ninetyfive.util.log")
 local GitignoreCache = {}
 
 ---@param bufnr number
+function GitignoreCache.is_cached(bufnr)
+    local status = vim.b[bufnr].ninetyfive_gitignored
+    return status ~= nil
+end
+---@param bufnr number
 function GitignoreCache.is_ignored(bufnr, cb)
     local status = vim.b[bufnr].ninetyfive_gitignored
     if status ~= nil then
@@ -11,7 +16,44 @@ function GitignoreCache.is_ignored(bufnr, cb)
             cb(status)
         end
     end
-    GitignoreCache.update_status(bufnr, cb)
+
+    local timer = vim.loop.new_timer()
+    local elapsed = 0
+    local max_wait = 3000 -- Optional: max wait time in ms
+
+    timer:start(
+        0,
+        30,
+        vim.schedule_wrap(function()
+            local status2 = vim.b[bufnr].ninetyfive_gitignored
+
+            if status2 ~= nil then
+                timer:stop()
+                timer:close()
+                if cb then
+                    cb(status2)
+                end
+            elseif elapsed >= max_wait then
+                -- Optional: timeout after max_wait
+                timer:stop()
+                timer:close()
+                if cb then
+                    cb(false) -- or cb(true) for default value
+                end
+            end
+
+            elapsed = elapsed + 30
+        end)
+    )
+
+    -- // case 1 - return cb(false)- ws is not closed
+    -- vim.defer_fn(function()
+    --     cb(false)
+    -- end, 1000)
+    -- case 2 - call update status and wrap calbacl - ws is closed
+    -- GitignoreCache.update_status(bufnr, function(v)
+    --     cb(v == true)
+    -- end)
 end
 
 ---@param bufnr number

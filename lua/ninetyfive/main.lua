@@ -2,6 +2,8 @@ local log = require("ninetyfive.util.log")
 local state = require("ninetyfive.state")
 local Websocket = require("ninetyfive.websocket")
 
+local gitignore_cache = require("ninetyfive.gitignore")
+
 -- internal methods
 local main = {}
 
@@ -19,7 +21,10 @@ function main.toggle(scope)
 
     print("toggle: is disabled, enabling..")
     log.debug(scope, "ninetyfive is now enabled!")
-
+    local bufnr = vim.api.nvim_get_current_buf()
+    if not gitignore_cache.is_cached(bufnr) then
+        gitignore_cache.update_status(bufnr, nil)
+    end
     main.enable(scope)
 end
 
